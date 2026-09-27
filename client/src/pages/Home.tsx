@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -35,51 +35,27 @@ const promises = [
   },
 ];
 
-function getNextMeeting() {
-  const now = new Date();
-  const meeting = new Date(now.getFullYear(), 11, 24, 20, 0, 0);
-  if (meeting.getTime() <= now.getTime()) {
-    meeting.setFullYear(now.getFullYear() + 1);
-  }
-  return meeting;
-}
+const comfortCards = [
+  { label: "если тихо грустно", title: "Ты не одна", text: "Я рядом с тобой — даже если сейчас это можно почувствовать только через эти слова." },
+  { label: "если день не задался", title: "Ты уже достаточно", text: "Тебе не нужно быть сильной каждую минуту. Можно просто выдохнуть. Я никуда не исчезаю." },
+  { label: "если очень скучаешь", title: "Скучаю тоже", text: "Положи ладонь на сердце. Где-то в этом мире моё сердце отвечает тебе тем же ритмом." },
+];
 
-function pad(value: number) {
-  return value.toString().padStart(2, "0");
-}
+const memories = [
+  { image: "/manus-storage/memory-cafe_1fba7cfa.jpg", number: "01", title: "Наше маленькое «рядом»", text: "Даже обычный вечер становится особенным, если в нём есть ты." },
+  { image: "/manus-storage/memory-window_974f93a1.jpg", number: "02", title: "Голосовые в дороге", text: "Люблю находить тебя в наушниках, в сообщениях и между делом." },
+  { image: "/manus-storage/memory-sunset_d0595ed2.jpg", number: "03", title: "До самого света", text: "Мы обязательно соберём ещё много таких моментов — уже рядом." },
+];
 
 export default function Home() {
-  const [target] = useState(getNextMeeting);
-  const [timeLeft, setTimeLeft] = useState(() => target.getTime() - Date.now());
   const [isLetterOpen, setIsLetterOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setTimeLeft(Math.max(0, target.getTime() - Date.now()));
-    }, 1000);
-    return () => window.clearInterval(timer);
-  }, [target]);
 
   useEffect(() => {
     const onScroll = () => setHasScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const countdown = useMemo(() => {
-    const totalSeconds = Math.floor(timeLeft / 1000);
-    const days = Math.floor(totalSeconds / 86400);
-    const hours = Math.floor((totalSeconds % 86400) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    return [
-      { value: days, label: "дней" },
-      { value: hours, label: "часов" },
-      { value: minutes, label: "минут" },
-      { value: seconds, label: "секунд" },
-    ];
-  }, [timeLeft]);
 
   return (
     <div className="site-shell">
@@ -91,7 +67,7 @@ export default function Home() {
         <nav className="desktop-nav" aria-label="Навигация по странице">
           <a href="#letter">Письмо</a>
           <a href="#promises">Обещания</a>
-          <a href="#distance">Расстояние</a>
+          <a href="#memories">Воспоминания</a>
         </nav>
         <a className="nav-cta" href="#letter">
           <span>для тебя</span>
@@ -107,15 +83,15 @@ export default function Home() {
           <div className="hero-glow hero-glow--two" aria-hidden="true" />
           <div className="hero-content page-wrap">
             <div className="hero-copy">
-              <p className="eyebrow eyebrow--light"><span className="eyebrow-dot" /> личная страница для одного человека</p>
+              <p className="eyebrow eyebrow--light"><span className="eyebrow-dot" /> открой, если сегодня немного грустно</p>
               <h1>
                 Ты —<br />
-                <em>мой</em> самый<br />
-                тёплый адрес.
+                <em>моя</em> самая<br />
+                любимая.
               </h1>
-              <p className="hero-subtitle">Даже когда нас разделяют километры,<br className="desktop-only" /> я всё равно выбираю тебя — каждый день.</p>
+              <p className="hero-subtitle">Это маленькое место, где я всегда рядом.<br className="desktop-only" /> Здесь можно выдохнуть, улыбнуться и вспомнить нас.</p>
               <a href="#letter" className="primary-button">
-                <span>Открыть письмо</span>
+                <span>Зайти ко мне</span>
                 <ArrowDownRight size={18} />
               </a>
             </div>
@@ -160,20 +136,42 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="countdown-section" id="distance">
-          <div className="page-wrap countdown-layout">
-            <div className="countdown-copy">
-              <p className="eyebrow eyebrow--light"><Clock3 size={14} /> считаем не дни, а моменты</p>
-              <h2>До следующего<br /><em>«наконец-то»</em></h2>
-              <p>Каждая секунда приближает тот самый момент, когда расстояние снова станет нулём.</p>
-              <div className="countdown-date"><span className="date-dot" /> 24 декабря · 20:00</div>
+        <section className="memories-section section-light" id="memories">
+          <div className="page-wrap">
+            <div className="section-heading memories-heading">
+              <div>
+                <div className="section-kicker"><span className="section-index">02</span><span>маленькая выставка нас</span></div>
+                <h2>Вспоминай<br /><em>нас.</em></h2>
+              </div>
+              <p>Здесь могут жить ваши фотографии, смешные скриншоты и моменты, которые хочется сохранить поближе.</p>
             </div>
-            <div className="countdown-grid" aria-label="Обратный отсчёт до встречи">
-              {countdown.map((item) => (
-                <div className="countdown-cell" key={item.label}>
-                  <strong>{pad(item.value)}</strong>
-                  <span>{item.label}</span>
-                </div>
+            <div className="memories-grid">
+              {memories.map((memory) => (
+                <article className="memory-card" key={memory.number}>
+                  <div className="memory-photo" style={{ backgroundImage: `url(${memory.image})` }}><span>{memory.number}</span></div>
+                  <div className="memory-copy"><h3>{memory.title}</h3><p>{memory.text}</p></div>
+                </article>
+              ))}
+            </div>
+            <p className="memories-note"><Heart size={13} fill="currentColor" /> сюда можно добавить ваши настоящие фотографии — и сделать это место только вашим</p>
+          </div>
+        </section>
+
+        <section className="comfort-section" id="comfort">
+          <div className="page-wrap">
+            <div className="comfort-intro">
+              <p className="eyebrow eyebrow--light"><Clock3 size={14} /> выбери, что тебе сейчас нужно</p>
+              <h2>Открой любое<br /><em>тёплое слово.</em></h2>
+              <p>Не обязательно читать всё. Иногда достаточно одной фразы, чтобы стало немного легче.</p>
+            </div>
+            <div className="comfort-grid">
+              {comfortCards.map((card) => (
+                <article className="comfort-card" key={card.label}>
+                  <span className="comfort-label">{card.label}</span>
+                  <h3>{card.title}</h3>
+                  <p>{card.text}</p>
+                  <Heart size={17} fill="currentColor" />
+                </article>
               ))}
             </div>
           </div>
@@ -183,7 +181,7 @@ export default function Home() {
           <div className="page-wrap">
             <div className="section-heading">
               <div>
-                <div className="section-kicker"><span className="section-index">02</span><span>то, что держит нас рядом</span></div>
+                <div className="section-kicker"><span className="section-index">03</span><span>то, что держит нас рядом</span></div>
                 <h2>Три маленьких<br /><em>обещания.</em></h2>
               </div>
               <p>Не большие слова. Просто вещи, которые я хочу делать для нас — каждый день, пока мы не встретимся.</p>
@@ -221,7 +219,7 @@ export default function Home() {
           <div className="page-wrap final-content">
             <p className="eyebrow">на случай, если сегодня нужен знак</p>
             <h2>Я всё ещё<br /><em>здесь.</em></h2>
-            <p className="final-subtitle">И буду. До встречи, после встречи, всегда.</p>
+            <p className="final-subtitle">И буду рядом — в каждом сообщении, воспоминании и тёплом слове.</p>
             <button className="primary-button primary-button--dark" onClick={() => setIsLetterOpen(true)}><Mail size={18} /><span>Открыть ещё раз</span></button>
             <div className="final-signoff">с любовью, <span>твой человек</span></div>
           </div>
