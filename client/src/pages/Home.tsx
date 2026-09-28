@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -12,6 +12,8 @@ import {
   Quote,
   Send,
   Sparkles,
+  Volume2,
+  VolumeX,
   X,
 } from "lucide-react";
 import { driveMedia, type DriveMedia, type DriveMediaKind } from "@/lib/mediaManifest";
@@ -47,6 +49,8 @@ export default function Home() {
   const [isLetterOpen, setIsLetterOpen] = useState(false);
   const [mediaFilter, setMediaFilter] = useState<DriveMediaKind | "all">("all");
   const [activeMedia, setActiveMedia] = useState<DriveMedia | null>(null);
+  const [musicEnabled, setMusicEnabled] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
@@ -55,11 +59,42 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    const startMusicAfterGesture = () => {
+      const audio = audioRef.current;
+      if (!audio || musicEnabled) return;
+      audio.muted = false;
+      audio.volume = 0.18;
+      void audio.play().then(() => setMusicEnabled(true)).catch(() => undefined);
+    };
+    window.addEventListener("pointerdown", startMusicAfterGesture, { once: true });
+    return () => window.removeEventListener("pointerdown", startMusicAfterGesture);
+  }, [musicEnabled]);
+
+  const toggleMusic = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (musicEnabled) {
+      audio.pause();
+      setMusicEnabled(false);
+    } else {
+      audio.muted = false;
+      audio.volume = 0.18;
+      void audio.play().then(() => setMusicEnabled(true)).catch(() => undefined);
+    }
+  };
+
   const visibleMedia = mediaFilter === "all" ? driveMedia : driveMedia.filter((media) => media.kind === mediaFilter);
   const mediaCount = (kind: DriveMediaKind) => driveMedia.filter((media) => media.kind === kind).length;
 
   return (
     <div className="site-shell">
+      <audio ref={audioRef} src="/manus-storage/quiet-between-us_c93ed4a9.mp3" autoPlay muted loop preload="auto" aria-hidden="true" />
+      <button className={`music-control ${musicEnabled ? "music-control--on" : ""}`} onClick={toggleMusic} aria-label={musicEnabled ? "Выключить музыку" : "Включить музыку"}>
+        <span className="music-control__pulse" />
+        {musicEnabled ? <Volume2 size={17} /> : <VolumeX size={17} />}
+        <span>{musicEnabled ? "музыка рядом" : "включить музыку"}</span>
+      </button>
       <header className={`site-nav ${hasScrolled ? "site-nav--scrolled" : ""}`}>
         <a className="brand" href="#top" aria-label="В начало страницы">
           <span className="brand-mark"><Heart size={15} fill="currentColor" /></span>
@@ -163,7 +198,7 @@ export default function Home() {
                 <button className={`drive-item drive-item--${media.kind}`} key={media.id} onClick={() => setActiveMedia(media)} aria-label={`Открыть ${media.name}`}>
                   <img src={media.thumb} alt={media.name} loading={index < 8 ? "eager" : "lazy"} />
                   {media.kind !== "photo" && <span className="drive-play"><Play size={16} fill="currentColor" /></span>}
-                  <span className="drive-item__meta"><span>{media.kind === "photo" ? "фото" : media.kind === "circle" ? "кружок" : "видео"}</span><span>{String(index + 1).padStart(2, "0")}</span></span>
+                  <span className="drive-item__meta"><span>{media.caption}</span><span>{String(index + 1).padStart(2, "0")}</span></span>
                 </button>
               ))}
             </div>
@@ -246,7 +281,7 @@ export default function Home() {
           <div className={`media-modal__card media-modal__card--${activeMedia.kind}`}>
             <button className="modal-close" aria-label="Закрыть просмотр" onClick={() => setActiveMedia(null)}><X size={18} /></button>
             {activeMedia.kind === "photo" ? <img src={activeMedia.thumb} alt={activeMedia.name} /> : <iframe src={activeMedia.preview} title={activeMedia.name} allow="autoplay; fullscreen" allowFullScreen />}
-            <div className="media-modal__caption"><span>{activeMedia.kind === "circle" ? "кружок из Telegram" : activeMedia.kind === "video" ? "ваше видео" : "ваше фото"}</span><strong>{activeMedia.name}</strong></div>
+            <div className="media-modal__caption"><span>{activeMedia.kind === "circle" ? "кружок из Telegram" : activeMedia.kind === "video" ? "ваше видео" : "ваше фото"}</span><strong>{activeMedia.caption}</strong></div>
           </div>
         </div>
       )}
