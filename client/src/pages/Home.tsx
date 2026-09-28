@@ -167,7 +167,7 @@ export default function Home() {
               </h1>
               <p className="hero-subtitle">Это маленькое место, где я всегда рядом.<br className="desktop-only" /> Здесь можно выдохнуть, улыбнуться и вспомнить нас.</p>
               <a href="#letter" className="primary-button">
-                <span>Зайти ко мне</span>
+                <span>Письмо</span>
                 <ArrowDownRight size={18} />
               </a>
               <button className="miss-button" onClick={handleMiss}>
@@ -213,7 +213,7 @@ export default function Home() {
                 <div className="letter-card__meta"><span>для: тебя</span><span>от: меня</span></div>
                 <Quote size={30} className="quote-icon" />
                 <p>Я бы выбрал тебя снова. В любом городе. В любое время. В любой версии этой жизни.</p>
-                <div className="letter-card__signature">твой человек<span>.</span></div>
+                <div className="letter-card__signature">твой любимый<span>.</span></div>
               </div>
               <div className="side-caption"><span className="side-caption__line" /> расстояние — это просто цифра</div>
             </div>
@@ -227,7 +227,7 @@ export default function Home() {
                 <div className="section-kicker"><span className="section-index">02</span><span>маленькая выставка нас</span></div>
                 <h2>Вспоминай<br /><em>нас.</em></h2>
               </div>
-              <p>Все ваши фото, видео и кружки собраны в одном тёплом месте. Можно листать, открывать и снова находить любимые моменты.</p>
+              <p>Все наши фото, видео и кружки собраны в одном тёплом месте. Можно листать, открывать и снова находить любимые моменты.</p>
             </div>
             <div className="media-toolbar" role="tablist" aria-label="Фильтр материалов">
               {([
@@ -250,7 +250,6 @@ export default function Home() {
                 </button>
               ))}
             </div>
-            <p className="memories-note"><Heart size={13} fill="currentColor" /> материалы открываются из вашей общей папки Google Drive</p>
           </div>
         </section>
 
@@ -300,13 +299,13 @@ export default function Home() {
         <section className="distance-section">
           <div className="page-wrap">
             <div className="distance-panel">
-              <div className="distance-topline"><span>на карте</span><span>но не в сердце</span></div>
+              <div className="distance-topline"><span>на карте</span></div>
               <div className="route-line" aria-hidden="true">
-                <div className="route-point route-point--left"><span className="route-pin"><MapPin size={15} fill="currentColor" /></span><strong>ты</strong><small>там, где сейчас</small></div>
+                <div className="route-point route-point--left"><span className="route-pin"><MapPin size={15} fill="currentColor" /></span><strong>ты</strong><small>Христиновка</small></div>
                 <div className="route-path"><span className="route-dash" /><span className="route-heart"><Heart size={18} fill="currentColor" /></span><span className="route-dash" /></div>
                 <div className="route-point route-point--right"><span className="route-pin"><MapPin size={15} fill="currentColor" /></span><strong>я</strong><small>всегда рядом</small></div>
               </div>
-              <div className="distance-bottomline"><span>∞ километров</span><span>0 сантиметров между нами</span></div>
+              <div className="distance-bottomline"><span>253 километров</span><span>25300000 сантиметров между нами</span></div>
             </div>
           </div>
         </section>
@@ -318,7 +317,7 @@ export default function Home() {
             <h2>Я всё ещё<br /><em>здесь.</em></h2>
             <p className="final-subtitle">И буду рядом — в каждом сообщении, воспоминании и тёплом слове.</p>
             <button className="primary-button primary-button--dark" onClick={() => setIsLetterOpen(true)}><Mail size={18} /><span>Открыть ещё раз</span></button>
-            <div className="final-signoff">с любовью, <span>твой человек</span></div>
+            <div className="final-signoff">с любовью, <span>твой Леша</span></div>
           </div>
         </section>
       </main>
@@ -345,7 +344,7 @@ export default function Home() {
             <div className="modal-card__label"><Mail size={14} /> личное письмо</div>
             <h2 id="letter-modal-title">Привет, любимая.</h2>
             <div className="modal-copy">
-              <p>Если ты читаешь это ночью — знай, где-то в этом же городе или в другом часовом поясе я тоже думаю о тебе.</p>
+              <p>Пусть сейчас между нами разные области, мы всё равно в одной стране — и в моём сердце ты совсем рядом.</p>
               <p>Мне нравится, что у нас есть своё «мы», которое помещается в одно короткое сообщение, в фотографию с улицы и в обещание: мы обязательно встретимся.</p>
               <p>Спасибо, что остаёшься моей. Я очень тебя люблю. И расстояние это знает.</p>
             </div>
