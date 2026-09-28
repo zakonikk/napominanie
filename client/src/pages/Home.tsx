@@ -129,7 +129,7 @@ export default function Home() {
 
   return (
     <div className="site-shell">
-      <audio ref={audioRef} src={`${import.meta.env.BASE_URL}assets/quiet-between-us.mp3`} autoPlay muted loop preload="auto" aria-hidden="true" />
+      <audio ref={audioRef} src="/manus-storage/quiet-between-us_c93ed4a9.mp3" autoPlay muted loop preload="auto" aria-hidden="true" />
       <button className={`music-control ${musicEnabled ? "music-control--on" : ""}`} onClick={toggleMusic} aria-label={musicEnabled ? "Выключить музыку" : "Включить музыку"}>
         <span className="music-control__pulse" />
         {musicEnabled ? <Volume2 size={17} /> : <VolumeX size={17} />}

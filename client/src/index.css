@@ -86,7 +86,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--coral); outline
 .nav-cta { display: flex; align-items: center; gap: 10px; font-size: 11px; letter-spacing: .13em; text-transform: uppercase; }
 
 .hero-section { position: relative; min-height: 790px; overflow: hidden; background: var(--plum); color: #fff7ee; }
-.hero-image { position: absolute; inset: 0 0 0 38%; background: linear-gradient(90deg, var(--plum) 0%, rgba(43, 23, 33, .84) 17%, rgba(43, 23, 33, .22) 64%, rgba(43, 23, 33, .12) 100%), url('../assets/distance-dream.jpg') center / cover; opacity: .93; }
+.hero-image { position: absolute; inset: 0 0 0 38%; background: linear-gradient(90deg, var(--plum) 0%, rgba(43, 23, 33, .84) 17%, rgba(43, 23, 33, .22) 64%, rgba(43, 23, 33, .12) 100%), url('/manus-storage/distance-dream_96a840c2.jpg') center / cover; opacity: .93; }
 .hero-noise { position: absolute; inset: 0; opacity: .2; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.27'/%3E%3C/svg%3E"); mix-blend-mode: soft-light; }
 .hero-glow { position: absolute; border-radius: 50%; filter: blur(30px); opacity: .28; pointer-events: none; }
 .hero-glow--one { width: 270px; height: 270px; top: 15%; right: 18%; background: #e66e5d; }
