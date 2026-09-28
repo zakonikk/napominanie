@@ -8,11 +8,13 @@ import {
   Mail,
   MapPin,
   Moon,
+  Play,
   Quote,
   Send,
   Sparkles,
   X,
 } from "lucide-react";
+import { driveMedia, type DriveMedia, type DriveMediaKind } from "@/lib/mediaManifest";
 
 const promises = [
   {
@@ -41,14 +43,10 @@ const comfortCards = [
   { label: "если очень скучаешь", title: "Скучаю тоже", text: "Положи ладонь на сердце. Где-то в этом мире моё сердце отвечает тебе тем же ритмом." },
 ];
 
-const memories = [
-  { image: "/manus-storage/memory-cafe_1fba7cfa.jpg", number: "01", title: "Наше маленькое «рядом»", text: "Даже обычный вечер становится особенным, если в нём есть ты." },
-  { image: "/manus-storage/memory-window_974f93a1.jpg", number: "02", title: "Голосовые в дороге", text: "Люблю находить тебя в наушниках, в сообщениях и между делом." },
-  { image: "/manus-storage/memory-sunset_d0595ed2.jpg", number: "03", title: "До самого света", text: "Мы обязательно соберём ещё много таких моментов — уже рядом." },
-];
-
 export default function Home() {
   const [isLetterOpen, setIsLetterOpen] = useState(false);
+  const [mediaFilter, setMediaFilter] = useState<DriveMediaKind | "all">("all");
+  const [activeMedia, setActiveMedia] = useState<DriveMedia | null>(null);
   const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
@@ -56,6 +54,9 @@ export default function Home() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const visibleMedia = mediaFilter === "all" ? driveMedia : driveMedia.filter((media) => media.kind === mediaFilter);
+  const mediaCount = (kind: DriveMediaKind) => driveMedia.filter((media) => media.kind === kind).length;
 
   return (
     <div className="site-shell">
@@ -136,24 +137,37 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="memories-section section-light" id="memories">
+        <section className="media-section section-light" id="memories">
           <div className="page-wrap">
-            <div className="section-heading memories-heading">
+            <div className="section-heading media-heading">
               <div>
                 <div className="section-kicker"><span className="section-index">02</span><span>маленькая выставка нас</span></div>
                 <h2>Вспоминай<br /><em>нас.</em></h2>
               </div>
-              <p>Здесь могут жить ваши фотографии, смешные скриншоты и моменты, которые хочется сохранить поближе.</p>
+              <p>Все ваши фото, видео и кружки собраны в одном тёплом месте. Можно листать, открывать и снова находить любимые моменты.</p>
             </div>
-            <div className="memories-grid">
-              {memories.map((memory) => (
-                <article className="memory-card" key={memory.number}>
-                  <div className="memory-photo" style={{ backgroundImage: `url(${memory.image})` }}><span>{memory.number}</span></div>
-                  <div className="memory-copy"><h3>{memory.title}</h3><p>{memory.text}</p></div>
-                </article>
+            <div className="media-toolbar" role="tablist" aria-label="Фильтр материалов">
+              {([
+                ["all", "всё", driveMedia.length],
+                ["photo", "фото", mediaCount("photo")],
+                ["video", "видео", mediaCount("video")],
+                ["circle", "кружки", mediaCount("circle")],
+              ] as const).map(([kind, label, count]) => (
+                <button key={kind} className={`media-tab ${mediaFilter === kind ? "media-tab--active" : ""}`} onClick={() => setMediaFilter(kind)} role="tab" aria-selected={mediaFilter === kind}>
+                  <span>{label}</span><small>{count}</small>
+                </button>
               ))}
             </div>
-            <p className="memories-note"><Heart size={13} fill="currentColor" /> сюда можно добавить ваши настоящие фотографии — и сделать это место только вашим</p>
+            <div className="drive-gallery">
+              {visibleMedia.map((media, index) => (
+                <button className={`drive-item drive-item--${media.kind}`} key={media.id} onClick={() => setActiveMedia(media)} aria-label={`Открыть ${media.name}`}>
+                  <img src={media.thumb} alt={media.name} loading={index < 8 ? "eager" : "lazy"} />
+                  {media.kind !== "photo" && <span className="drive-play"><Play size={16} fill="currentColor" /></span>}
+                  <span className="drive-item__meta"><span>{media.kind === "photo" ? "фото" : media.kind === "circle" ? "кружок" : "видео"}</span><span>{String(index + 1).padStart(2, "0")}</span></span>
+                </button>
+              ))}
+            </div>
+            <p className="memories-note"><Heart size={13} fill="currentColor" /> материалы открываются из вашей общей папки Google Drive</p>
           </div>
         </section>
 
@@ -225,6 +239,17 @@ export default function Home() {
           </div>
         </section>
       </main>
+
+      {activeMedia && (
+        <div className="media-modal" role="dialog" aria-modal="true" aria-label={`Просмотр ${activeMedia.name}`}>
+          <button className="modal-backdrop" aria-label="Закрыть просмотр" onClick={() => setActiveMedia(null)} />
+          <div className={`media-modal__card media-modal__card--${activeMedia.kind}`}>
+            <button className="modal-close" aria-label="Закрыть просмотр" onClick={() => setActiveMedia(null)}><X size={18} /></button>
+            {activeMedia.kind === "photo" ? <img src={activeMedia.thumb} alt={activeMedia.name} /> : <iframe src={activeMedia.preview} title={activeMedia.name} allow="autoplay; fullscreen" allowFullScreen />}
+            <div className="media-modal__caption"><span>{activeMedia.kind === "circle" ? "кружок из Telegram" : activeMedia.kind === "video" ? "ваше видео" : "ваше фото"}</span><strong>{activeMedia.name}</strong></div>
+          </div>
+        </div>
+      )}
 
       {isLetterOpen && (
         <div className="letter-modal" role="dialog" aria-modal="true" aria-labelledby="letter-modal-title">
