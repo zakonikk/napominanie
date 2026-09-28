@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -45,13 +45,30 @@ const comfortCards = [
   { label: "если очень скучаешь", title: "Скучаю тоже", text: "Положи ладонь на сердце. Где-то в этом мире моё сердце отвечает тебе тем же ритмом." },
 ];
 
+const warmMessages = [
+  "Я скучаю по тебе сильнее, чем умею сказать.",
+  "Ты — моё самое любимое «мы».",
+  "Я рядом. Даже когда между нами километры.",
+  "Обнимаю тебя мысленно прямо сейчас.",
+  "Скорее бы снова увидеть твою улыбку.",
+  "Ты у меня самая родная.",
+];
+
 export default function Home() {
   const [isLetterOpen, setIsLetterOpen] = useState(false);
   const [mediaFilter, setMediaFilter] = useState<DriveMediaKind | "all">("all");
   const [activeMedia, setActiveMedia] = useState<DriveMedia | null>(null);
   const [musicEnabled, setMusicEnabled] = useState(false);
+  const [missNote, setMissNote] = useState<string | null>(null);
+  const [heartBurst, setHeartBurst] = useState<Array<{ id: number; left: number; delay: number; size: number; rotate: number }>>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [hasScrolled, setHasScrolled] = useState(false);
+
+  const daysTogether = useMemo(() => {
+    const start = new Date("2025-09-25T00:00:00");
+    const today = new Date();
+    return Math.max(0, Math.floor((Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) - Date.UTC(start.getFullYear(), start.getMonth(), start.getDate())) / 86400000));
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setHasScrolled(window.scrollY > 20);
@@ -71,6 +88,16 @@ export default function Home() {
     return () => window.removeEventListener("pointerdown", startMusicAfterGesture);
   }, [musicEnabled]);
 
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (activeMedia && activeMedia.kind !== "photo") {
+      audio.pause();
+    } else if (musicEnabled && audio.paused) {
+      void audio.play().catch(() => undefined);
+    }
+  }, [activeMedia, musicEnabled]);
+
   const toggleMusic = () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -82,6 +109,19 @@ export default function Home() {
       audio.volume = 0.18;
       void audio.play().then(() => setMusicEnabled(true)).catch(() => undefined);
     }
+  };
+
+  const handleMiss = () => {
+    const burst = Array.from({ length: 18 }, (_, index) => ({
+      id: Date.now() + index,
+      left: 8 + Math.random() * 84,
+      delay: Math.random() * 0.3,
+      size: 15 + Math.random() * 18,
+      rotate: -28 + Math.random() * 56,
+    }));
+    setHeartBurst(burst);
+    setMissNote(warmMessages[Math.floor(Math.random() * warmMessages.length)]);
+    window.setTimeout(() => { setHeartBurst([]); setMissNote(null); }, 3600);
   };
 
   const visibleMedia = mediaFilter === "all" ? driveMedia : driveMedia.filter((media) => media.kind === mediaFilter);
@@ -130,12 +170,20 @@ export default function Home() {
                 <span>Зайти ко мне</span>
                 <ArrowDownRight size={18} />
               </a>
+              <button className="miss-button" onClick={handleMiss}>
+                <Heart size={16} fill="currentColor" /> <span>Скучаю</span>
+              </button>
             </div>
             <div className="hero-note" aria-label="Небольшая заметка">
               <div className="hero-note__top"><Moon size={15} /><span>заметка · 23:47</span></div>
               <p>«Иногда скучать — это просто ещё один способ сказать: ты мне очень нужна».</p>
               <div className="hero-note__line"><span /> <span>люблю тебя</span></div>
             </div>
+          </div>
+          <div className="together-counter page-wrap" aria-label={`Мы вместе уже ${daysTogether} дней`}>
+            <div className="together-counter__heart"><Heart size={19} fill="currentColor" /></div>
+            <div><span>мы вместе уже</span><strong>{daysTogether}</strong><span>дней</span></div>
+            <small>с 25 сентября 2025</small>
           </div>
           <div className="hero-scroll page-wrap" aria-hidden="true">
             <span>листай ниже</span><span className="scroll-line" />
@@ -198,7 +246,7 @@ export default function Home() {
                 <button className={`drive-item drive-item--${media.kind}`} key={media.id} onClick={() => setActiveMedia(media)} aria-label={`Открыть ${media.name}`}>
                   <img src={media.thumb} alt={media.name} loading={index < 8 ? "eager" : "lazy"} />
                   {media.kind !== "photo" && <span className="drive-play"><Play size={16} fill="currentColor" /></span>}
-                  <span className="drive-item__meta"><span>{media.caption}</span><span>{String(index + 1).padStart(2, "0")}</span></span>
+                  <span className="drive-item__meta"><span>{media.kind === "photo" ? "фото" : media.kind === "circle" ? "кружок" : "видео"}</span><span>{String(index + 1).padStart(2, "0")}</span></span>
                 </button>
               ))}
             </div>
@@ -275,13 +323,16 @@ export default function Home() {
         </section>
       </main>
 
+      {heartBurst.length > 0 && <div className="heart-burst" aria-hidden="true">{heartBurst.map((heart) => <Heart key={heart.id} className="burst-heart" fill="currentColor" style={{ left: `${heart.left}%`, animationDelay: `${heart.delay}s`, fontSize: `${heart.size}px`, transform: `rotate(${heart.rotate}deg)` }} />)}</div>}
+      {missNote && <div className="miss-note" role="status"><Heart size={16} fill="currentColor" /><span>{missNote}</span></div>}
+
       {activeMedia && (
         <div className="media-modal" role="dialog" aria-modal="true" aria-label={`Просмотр ${activeMedia.name}`}>
           <button className="modal-backdrop" aria-label="Закрыть просмотр" onClick={() => setActiveMedia(null)} />
           <div className={`media-modal__card media-modal__card--${activeMedia.kind}`}>
             <button className="modal-close" aria-label="Закрыть просмотр" onClick={() => setActiveMedia(null)}><X size={18} /></button>
             {activeMedia.kind === "photo" ? <img src={activeMedia.thumb} alt={activeMedia.name} /> : <iframe src={activeMedia.preview} title={activeMedia.name} allow="autoplay; fullscreen" allowFullScreen />}
-            <div className="media-modal__caption"><span>{activeMedia.kind === "circle" ? "кружок из Telegram" : activeMedia.kind === "video" ? "ваше видео" : "ваше фото"}</span><strong>{activeMedia.caption}</strong></div>
+            <div className="media-modal__caption"><span>{activeMedia.kind === "circle" ? "кружок из Telegram" : activeMedia.kind === "video" ? "ваше видео" : "ваше фото"}</span><strong>{activeMedia.kind === "photo" ? "любимое фото" : activeMedia.kind === "circle" ? "твой голос рядом" : "наш момент"}</strong></div>
           </div>
         </div>
       )}
