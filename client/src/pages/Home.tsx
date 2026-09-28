@@ -299,11 +299,17 @@ export default function Home() {
         <section className="distance-section">
           <div className="page-wrap">
             <div className="distance-panel">
-              <div className="distance-topline"><span>на карте</span></div>
-              <div className="route-line" aria-hidden="true">
-                <div className="route-point route-point--left"><span className="route-pin"><MapPin size={15} fill="currentColor" /></span><strong>ты</strong><small>Христиновка</small></div>
-                <div className="route-path"><span className="route-dash" /><span className="route-heart"><Heart size={18} fill="currentColor" /></span><span className="route-dash" /></div>
-                <div className="route-point route-point--right"><span className="route-pin"><MapPin size={15} fill="currentColor" /></span><strong>я</strong><small>всегда рядом</small></div>
+              <div className="distance-topline"><span>маленькая карта между нами</span><span>одна страна · два города</span></div>
+              <div className="route-map" aria-label="Карта расстояния между Христиновкой и тобой">
+                <div className="map-grid" aria-hidden="true" />
+                <svg className="map-route" viewBox="0 0 800 180" preserveAspectRatio="none" aria-hidden="true">
+                  <path className="map-route__shadow" d="M104 121 C220 32, 344 150, 474 76 S655 31, 700 74" />
+                  <path className="map-route__line" d="M104 121 C220 32, 344 150, 474 76 S655 31, 700 74" />
+                </svg>
+                <div className="map-distance"><Heart size={14} fill="currentColor" /><strong>253 километра</strong><span>между нами</span></div>
+                <div className="map-city map-city--left"><span className="map-city__pin"><MapPin size={16} fill="currentColor" /></span><strong>ты</strong><small>Христиновка</small></div>
+                <div className="map-city map-city--right"><span className="map-city__pin"><MapPin size={16} fill="currentColor" /></span><strong>я</strong><small>всегда рядом</small></div>
+                <span className="map-star map-star--one" aria-hidden="true">✦</span><span className="map-star map-star--two" aria-hidden="true">·</span><span className="map-star map-star--three" aria-hidden="true">✦</span>
               </div>
               <div className="distance-bottomline"><span>253 километров</span><span>25300000 сантиметров между нами</span></div>
             </div>
